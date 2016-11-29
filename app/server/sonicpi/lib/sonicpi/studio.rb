@@ -314,11 +314,11 @@ module SonicPi
       # thread.
       @reboot_mutex.synchronize do
         @rebooting = true
-        message "Rebooting SuperCollider audio server. Please wait..."
+        message "Rebooting audio server. Please wait..."
         @server.shutdown
         init_studio
         reset_server
-        message "SuperCollider audio server ready."
+        message "Audio server ready."
         @rebooting = false
         true
       end
@@ -328,7 +328,7 @@ module SonicPi
       @recording_mutex.synchronize do
         unless recording? || @paused
           @server.node_pause(0, true)
-          message "Pausing SuperCollider audio server"
+          message "Pausing audio server"
         end
         @paused = true
       end
@@ -338,7 +338,7 @@ module SonicPi
       @recording_mutex.synchronize do
         if @paused
           @server.node_run(0, true)
-          message "Resuming SuperCollider audio server"
+          message "Resuming audio server"
         end
         @paused = false
       end

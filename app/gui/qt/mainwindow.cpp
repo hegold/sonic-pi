@@ -307,7 +307,7 @@ MainWindow::MainWindow(QApplication &app, bool i18n, QSplashScreen* splash)
 
   // The implementation of this method is dynamically generated and can
   // be found in ruby_help.h:
-  initDocsWindow();
+  //initDocsWindow();
 
   //setup autocompletion
   autocomplete->loadSamples(sample_path);

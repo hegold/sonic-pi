@@ -71,103 +71,7 @@ void SonicPiAPIs::addSynthArgs(QString fx, QStringList args) {
 
 void SonicPiAPIs::updateAutoCompletionList(const QStringList &context,
 					   QStringList &list) {
-  if (context.isEmpty()) return;
-
-  // default
-  int ctx = Func;
-
-  QString partial = context.last();
-  QStringList words;
-  for (int i=0; i<context.length()-1; i++) {
-    if (context[i] != "")
-      words.append(context[i]);
-  }
-
-  QString last = words.isEmpty() ? "" : words.last();
-  QString lastButOne = words.length() < 2 ? "" : words[words.length()-2];
-  QString first = words.isEmpty() ? "" : words.first();
-  QString second = words.length() < 2 ? "" : words[1];
-
-  /* // debug
-  for (int i=0; i<context.length(); i++)
-    cout << "context[" << i << "] = " << context[i].toStdString() << endl;
-  for (int i=0; i<words.length(); i++)
-    cout << "words[" << i << "] = " << words[i].toStdString() << endl;
-  cout << "first = " << first.toStdString()
-       << ", second = " << second.toStdString()
-       << ", lastButOne = " << lastButOne.toStdString()
-       << ", last = " << last.toStdString()
-       << ", partial = " << partial.toStdString() << endl;
-  */
-
-  if (last == "sample" || last == "sample_info" || last == "sample_duration" || last == "use_sample_bpm" || last == "sample_buffer" || last == "sample_loaded?" || last == "load_sample" || last == "load_samples") {
-    ctx = Sample;
-  } else if (last == "with_fx" || last == "use_fx") {
-    ctx = FX;
-  } else if (last == "with_synth" || last == "use_synth" || last == "synth") {
-    ctx = Synth;
-  } else if (last == "load_example") {
-    ctx = Examples;
-
-  // autocomplete the second arg of scale/chord
-  } else if (lastButOne == "scale") {
-    ctx = Scale;
-  } else if (lastButOne == "chord") {
-    ctx = Chord;
-  } else if (last == "mc_set_block" ||
-             last == "mc_block_id" ||
-             last == "mc_set_area") {
-    ctx = MCBlock;
-  } else if (last == "use_tuning" || last == "with_tuning") {
-    ctx = Tuning;
-
-  // FX params
-  } else if (words.length() >= 2 &&
-             (first == "with_fx" || first == "use_fx")) {
-    if (last.endsWith(':')) return; // don't try to complete parameters
-    if (fxArgs.contains(second)) {
-      list = fxArgs[second];
-      return;
-    }
-
-  // Synth params
-  } else if (words.length() >= 2 && first == "synth") {
-    if (last.endsWith(':')) return; // don't try to complete parameters
-    if (synthArgs.contains(second)) {
-      list = synthArgs[second];
-      return;
-    }
-
-  // Play params
-  } else if (words.length() >= 2 && first == "play") {
-    if (last.endsWith(':')) return; // don't try to complete parameters
-    ctx = PlayParam;
-
-  // Sample params
-  } else if (words.length() >= 2 && first == "sample") {
-    if (last.endsWith(':')) return; // don't try to complete parameters
-    ctx = SampleParam;
-  } else if (first == "use_sample_defaults" || first == "with_sample_defaults") {
-    if (last.endsWith(':')) return; // don't try to complete parameters
-    ctx = SampleParam;
-
-  } else if (context.length() > 1) {
-    if (partial.length() <= 2) {
-      // don't attempt to autocomplete other words on the same line
-      // unless we have a plausible match
-      return;
-    }
-  }
-
-  if (partial == "") {
-    list << keywords[ctx];
-  } else {
-    foreach (const QString &str, keywords[ctx]) {
-      if (str.startsWith(partial)) {
-	list << str;
-      }
-    }
-  }
+  updateAutoCompletionListImpl(context, list, keywords, fxArgs, synthArgs);
 }
 
 QStringList SonicPiAPIs::callTips(const QStringList &context, int commas, QsciScintilla::CallTipsStyle style, QList<int> &shifts) {
@@ -178,4 +82,109 @@ QStringList SonicPiAPIs::callTips(const QStringList &context, int commas, QsciSc
   // some day...
   QStringList none;
   return none;
+}
+
+void SonicPiAPIs::updateAutoCompletionListImpl(const QStringList& context,
+                                               QStringList& list,
+                                               const KeywordList& keywords,
+                                               const ArgsList& fxArgs,
+                                               const ArgsList& synthArgs)
+{
+    if (context.isEmpty()) return;
+
+    // default
+    int ctx = Func;
+
+    QString partial = context.last();
+    QStringList words;
+    for (int i=0; i<context.length()-1; i++) {
+      if (context[i] != "")
+        words.append(context[i]);
+    }
+
+    QString last = words.isEmpty() ? "" : words.last();
+    QString lastButOne = words.length() < 2 ? "" : words[words.length()-2];
+    QString first = words.isEmpty() ? "" : words.first();
+    QString second = words.length() < 2 ? "" : words[1];
+
+    /* // debug
+    for (int i=0; i<context.length(); i++)
+      cout << "context[" << i << "] = " << context[i].toStdString() << endl;
+    for (int i=0; i<words.length(); i++)
+      cout << "words[" << i << "] = " << words[i].toStdString() << endl;
+    cout << "first = " << first.toStdString()
+         << ", second = " << second.toStdString()
+         << ", lastButOne = " << lastButOne.toStdString()
+         << ", last = " << last.toStdString()
+         << ", partial = " << partial.toStdString() << endl;
+    */
+
+    if (last == "sample" || last == "sample_info" || last == "sample_duration" || last == "use_sample_bpm" || last == "sample_buffer" || last == "sample_loaded?" || last == "load_sample" || last == "load_samples") {
+      ctx = Sample;
+    } else if (last == "with_fx" || last == "use_fx") {
+      ctx = FX;
+    } else if (last == "with_synth" || last == "use_synth" || last == "synth") {
+      ctx = Synth;
+    } else if (last == "load_example") {
+      ctx = Examples;
+
+    // autocomplete the second arg of scale/chord
+    } else if (lastButOne == "scale") {
+      ctx = Scale;
+    } else if (lastButOne == "chord") {
+      ctx = Chord;
+    } else if (last == "mc_set_block" ||
+               last == "mc_block_id" ||
+               last == "mc_set_area") {
+      ctx = MCBlock;
+    } else if (last == "use_tuning" || last == "with_tuning") {
+      ctx = Tuning;
+
+    // FX params
+    } else if (words.length() >= 2 &&
+               (first == "with_fx" || first == "use_fx")) {
+      if (last.endsWith(':')) return; // don't try to complete parameters
+      if (fxArgs.contains(second)) {
+        list = fxArgs[second];
+        return;
+      }
+
+    // Synth params
+    } else if (words.length() >= 2 && first == "synth") {
+      if (last.endsWith(':')) return; // don't try to complete parameters
+      if (synthArgs.contains(second)) {
+        list = synthArgs[second];
+        return;
+      }
+
+    // Play params
+    } else if (words.length() >= 2 && first == "play") {
+      if (last.endsWith(':')) return; // don't try to complete parameters
+      ctx = PlayParam;
+
+    // Sample params
+    } else if (words.length() >= 2 && first == "sample") {
+      if (last.endsWith(':')) return; // don't try to complete parameters
+      ctx = SampleParam;
+    } else if (first == "use_sample_defaults" || first == "with_sample_defaults") {
+      if (last.endsWith(':')) return; // don't try to complete parameters
+      ctx = SampleParam;
+
+    } else if (context.length() > 1) {
+      if (partial.length() <= 2) {
+        // don't attempt to autocomplete other words on the same line
+        // unless we have a plausible match
+        return;
+      }
+    }
+
+    if (partial == "") {
+      list << keywords[ctx];
+    } else {
+      foreach (const QString &str, keywords[ctx]) {
+        if (str.startsWith(partial)) {
+      list << str;
+        }
+      }
+    }
 }

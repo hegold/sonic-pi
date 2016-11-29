@@ -285,10 +285,8 @@ module SonicPi
       case os
       when :windows
         File.join(native_path, "ruby", "bin", "ruby.exe")
-      when :osx
+      when :osx, :raspberry, :linux
         File.join(native_path, "ruby", "bin", "ruby")
-      when  :raspberry, :linux
-        "ruby"
       end
     end
 
@@ -389,7 +387,7 @@ module SonicPi
       left = (opts_a[idx..-1])
       raise "There must be an even number of trailing synth args" unless left.size.even?
       h = Hash[*left]
-      res.merge(h)
+      res.merge()
     end
 
     def purge_nil_vals!(m)

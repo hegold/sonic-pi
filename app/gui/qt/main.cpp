@@ -21,7 +21,8 @@
 
 #include "mainwindow.h"
 #include "sonicpilog.h"
-int main(int argc, char *argv[])
+
+int mainfoo(int argc, char *argv[])
 {
 #ifndef Q_OS_MAC
   Q_INIT_RESOURCE(SonicPi);

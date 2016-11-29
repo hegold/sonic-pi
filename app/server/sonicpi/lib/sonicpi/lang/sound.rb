@@ -1338,7 +1338,7 @@ set_mixer_control! lpf: 30, lpf_slide: 16 # slide the global lpf to 30 over 16 b
         synth_name = current_synth unless synth_name
         sn_sym = synth_name.to_sym
         info = Synths::SynthInfo.get_info(sn_sym)
-        raise "Unknown synth #{sn_sym.inspect}" unless info || __thread_locals.get(:sonic_pi_mod_sound_use_external_synths)
+        raise "Unknown synth #{sn.inspect}" unless info || __thread_locals.get(:sonic_pi_mod_sound_use_external_synths)
 
 
         args_h = resolve_synth_opts_hash_or_array(args)
@@ -3702,7 +3702,7 @@ end",
 
 
       def chord_invert(notes, shift)
-        raise "Inversion shift value must be a whole number, got #{shift.inspect}" unless shift.is_a?(Integer)
+        raise "Inversion shift value must be a number, got #{shift.inspect}" unless shift.is_a?(Numeric)
         raise "Notes must be a list of notes, got #{notes.inspect}" unless is_list_like?(notes)
         if(shift > 0)
           chord_invert(notes.to_a[1..-1] + [notes.to_a[0]+12], shift-1)

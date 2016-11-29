@@ -576,9 +576,7 @@ live_loop :playback do
 end
 ```
 
-Note that if the microphone and speaker are close together (on a laptop or in a small room) you will potentially get a harsh feedback sound.
-
-Also, note that audio in isn't yet supported on Raspberry Pi."
+Note that if the microphone and speaker are close together (on a laptop or in a small room) you will potentially get a harsh feedback sound."
       end
 
       def arg_defaults
@@ -659,9 +657,7 @@ live_loop :playback do
 end
 ```
 
-Note that if the microphone and speaker are close together (on a laptop or in a small room) you will potentially get a harsh feedback sound.
-
-Also, note that audio in isn't yet supported on Raspberry Pi."
+Note that if the microphone and speaker are close together (on a laptop or in a small room) you will potentially get a harsh feedback sound."
       end
     end
 

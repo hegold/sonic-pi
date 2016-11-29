@@ -16,7 +16,7 @@ lessThan(QT_MAJOR_VERSION, 5): error("requires Qt 5")
 TARGET = 'sonic-pi'
 CONFIG += qscintilla2 qwt c++11
 
-QT += core gui concurrent network opengl widgets
+QT += core gui concurrent network opengl widgets testlib
 
 # Linux only
 unix:!macx {
@@ -64,7 +64,8 @@ SOURCES += main.cpp \
            sonic_pi_udp_osc_server.cpp \
            sonic_pi_tcp_osc_server.cpp \
            sonicpitheme.cpp \
-           scope.cpp
+           scope.cpp \
+    testautocomplete.cpp
 
 HEADERS  += mainwindow.h \
             oscpkt.hh \
@@ -106,9 +107,7 @@ OTHER_FILES += \
     images/recording_b.png \
 
 RESOURCES += \
-    SonicPi.qrc \
-    help_files.qrc \
-    info_files.qrc
+    SonicPi.qrc
 
 RC_FILE = SonicPi.rc
 

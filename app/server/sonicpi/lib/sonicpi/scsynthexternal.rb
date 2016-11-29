@@ -21,7 +21,7 @@ module SonicPi
 
     def initialize(events, opts={})
       @events = events
-      @hostname = opts[:hostname] || "127.0.0.1"
+      @hostname = opts[:hostname] || "localhost"
       @port = opts[:scsynth_port] || 4556
       @send_port = opts[:scsynth_send_port] || 4556
       @scsynth_pid = nil
@@ -364,8 +364,7 @@ module SonicPi
       rescue
         audio_card = "0"
       end
-
-      sys("jackd -R -p 32 -d alsa -d hw:#{audio_card} -n 3 -p 2048 -o2 -r 44100& ")
+      sys("jackd -R -p 32 -d alsa -d hw:#{audio_card} -n 3 -p 2048 -r -i2 -o2 44100& ")
 
       # Wait for Jackd to start
       while `jack_wait -c`.match /^not running$/
@@ -380,8 +379,6 @@ module SonicPi
 
       `jack_connect SuperCollider:out_1 system:playback_1`
       `jack_connect SuperCollider:out_2 system:playback_2`
-      # `jack_connect SuperCollider:in_1 system_capture_1`
-      # `jack_connect SuperCollider:in_2 system_capture_2`
 
       sleep 3
     end
@@ -408,8 +405,6 @@ module SonicPi
 
       `jack_connect SuperCollider:out_1 system:playback_1`
       `jack_connect SuperCollider:out_2 system:playback_2`
-      `jack_connect SuperCollider:in_1 system_capture_1`
-      `jack_connect SuperCollider:in_2 system_capture_2`
     end
   end
 end

@@ -11,6 +11,7 @@
 // notice is included.
 //++
 
+#include <array>
 #include <Qsci/qsciabstractapis.h>
 #include <QHash>
 
@@ -18,6 +19,9 @@ class SonicPiAPIs : public QsciAbstractAPIs
 {
  public:
   enum { Func, FX, Synth, Sample, Chord, Scale, MCBlock, PlayParam, SampleParam, Tuning, Examples, NContext};
+
+  typedef std::array<QStringList, NContext> KeywordList;
+  typedef QHash<QString, QStringList> ArgsList;
 
   SonicPiAPIs(QsciLexer *lexer);
 
@@ -38,8 +42,14 @@ class SonicPiAPIs : public QsciAbstractAPIs
 			       QList<int> &shifts);
 
 
+  static void updateAutoCompletionListImpl(const QStringList& context,
+                                           QStringList& list,
+                                           const KeywordList& keywords,
+                                           const ArgsList& fxArgs,
+                                           const ArgsList& synthArgs);
+
  private:
-  QStringList keywords[NContext];
-  QHash<QString, QStringList> fxArgs;
-  QHash<QString, QStringList> synthArgs;
+  KeywordList keywords;
+  ArgsList fxArgs;
+  ArgsList synthArgs;
 };

@@ -705,12 +705,6 @@ module SonicPi
       #__error(Exception.new(output.join("\n")))
     end
 
-    def __set_default_user_thread_locals!
-      __thread_locals.set :sonic_pi_spider_arg_bpm_scaling, true
-      __thread_locals.set :sonic_pi_spider_sleep_mul, 1.0
-      __thread_locals.set :sonic_pi_spider_new_thread_random_gen_idx, 0
-    end
-
     def __spider_eval(code, info={})
       id = @job_counter.next
 
@@ -737,7 +731,9 @@ module SonicPi
 
           __system_thread_locals.set :sonic_pi_spider_job_info, info
           __system_thread_locals.set :sonic_pi_spider_thread, true
-          __set_default_user_thread_locals!
+          __thread_locals.set :sonic_pi_spider_arg_bpm_scaling, true
+          __thread_locals.set :sonic_pi_spider_sleep_mul, 1.0
+          __thread_locals.set :sonic_pi_spider_new_thread_random_gen_idx, 0
           @msg_queue.push({type: :job, jobid: id, action: :start, jobinfo: info})
           @life_hooks.init(id, {:thread => Thread.current})
           now = Time.now.freeze
@@ -774,7 +770,7 @@ module SonicPi
               # TODO: end of hack
 
               err_msg = "[#{w}, line #{line}] \n #{message}"
-              error_line = code.lines.to_a[line - firstline] ||  ""
+              error_line = code.lines.to_a[line] ||  ""
             else
               line = -1
               err_msg = "\n #{e.message}"
@@ -1010,7 +1006,7 @@ module SonicPi
       @git_hash = __extract_git_hash
       gh_short = @git_hash ? "-#{@git_hash[0, 5]}" : ""
       @settings = Config::Settings.new(user_settings_path)
-      @version = Version.new(2, 12, 0, "BETA-#{gh_short}")
+      @version = Version.new(2, 11, 0)
       @server_version = __server_version
       @life_hooks = LifeCycleHooks.new
       @msg_queue = msg_queue
@@ -1029,33 +1025,17 @@ module SonicPi
       @global_start_time = 0
       @session_id = SecureRandom.uuid
       @snippets = {}
-
-      # TODO Add support for TCP
-      @osc_server = SonicPi::OSC::UDPServer.new(osc_cues_port, use_decoder_cache: true) do |address, args|
-
-        # Address comes as a string, args as an array.
-
-        # cue :nice, arg1: 123, arg2: 456
-        # is equivalent to an osc message:
-        # /nice "arg1" 123 "arg2" 456
-
-        # OSC spec requires address to begin with /.
-        # These are not allowed in ruby identifiers, and must be removed
-        cue_id = address.tr("/", "").to_sym
-
-        # To be consistent with the SonicPi "cue" method, which takes
-        # keyword arguments only, the OSC arguments (which are limited to arrays)
-        # are converted into hashes with keys symbol-ised.
-
-        cue_map = Hash[*args].map { |key, value| [key.to_sym, value] }.to_h
-
+      @osc_server = SonicPi::OSC::UDPServer.new(osc_cues_port) do |address, args|
         payload = {
           :time => Time.now.freeze,
-          :cue_map => cue_map,
-          :cue => cue_id
+          :sleep_mul => 1,
+          :beat => 0,
+          :run => 0,
+          :cue_map => {:args => args},
+          :cue => address
         }
 
-        @events.async_event("/spider_thread_sync/" + cue_id.to_s, payload)
+        @events.async_event("/spider_thread_sync/" + address.to_s, payload)
       end
 
 
