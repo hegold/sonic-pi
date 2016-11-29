@@ -30,14 +30,29 @@ private slots:
 
         QCOMPARE(result.length(), 0);
     }
-    //if (last == "sample" || last == "sample_info" || last == "sample_duration" || last == "use_sample_bpm" || last == "sample_buffer" || last == "sample_loaded?" || last == "load_sample" || last == "load_samples")
-    void withSampleKeywordAndPartial_AddsSamplesMatchingPartial()
+
+    void withSampleRelatedKeywordAndPartial_AddsSampleMatchingPartial_data()
     {
+        QTest::addColumn<QString>("sampleRelatedKeyword");
+
+        QTest::newRow("sample") << "sample";
+        QTest::newRow("sample_info") << "sample_info";
+        QTest::newRow("sample_duration") << "sample_duration";
+        QTest::newRow("use_sample_bpm") << "use_sample_bpm";
+        QTest::newRow("sample_buffer") << "sample_buffer";
+        QTest::newRow("sample_loaded?") << "sample_loaded?";
+        QTest::newRow("load_sample") << "load_sample";
+        QTest::newRow("load_samples") << "load_samples";
+    }
+
+    void withSampleRelatedKeywordAndPartial_AddsSampleMatchingPartial()
+    {
+        QFETCH(QString, sampleRelatedKeyword);
         QStringList context;
-        context << "sample" << "t";
+        context << sampleRelatedKeyword << ":t";
         QStringList result;
         auto keywords = makeKeywordList();
-        QString expectedContent("test");
+        QString expectedContent(":test");
         keywords[SonicPiAPIs::Sample] << expectedContent;
         auto fxArgs = makeArgsList();
         auto synthArgs = makeArgsList();
