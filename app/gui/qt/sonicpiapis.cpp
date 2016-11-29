@@ -107,7 +107,7 @@ void SonicPiAPIs::updateAutoCompletionListImpl(const QStringList& context,
     QString first = words.isEmpty() ? "" : words.first();
     QString second = words.length() < 2 ? "" : words[1];
 
-    /* // debug
+    // debug
     for (int i=0; i<context.length(); i++)
       cout << "context[" << i << "] = " << context[i].toStdString() << endl;
     for (int i=0; i<words.length(); i++)
@@ -117,7 +117,7 @@ void SonicPiAPIs::updateAutoCompletionListImpl(const QStringList& context,
          << ", lastButOne = " << lastButOne.toStdString()
          << ", last = " << last.toStdString()
          << ", partial = " << partial.toStdString() << endl;
-    */
+
 
     if (last == "sample" || last == "sample_info" || last == "sample_duration" || last == "use_sample_bpm" || last == "sample_buffer" || last == "sample_loaded?" || last == "load_sample" || last == "load_samples") {
       ctx = Sample;
