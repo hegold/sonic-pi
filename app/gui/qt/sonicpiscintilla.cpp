@@ -442,6 +442,14 @@ void SonicPiScintilla::downcaseWordOrSelection(){
   }
 }
 
+void SonicPiScintilla::incrementNumber(){
+    modifyNumberUnderCursor(1.0f);
+}
+
+void SonicPiScintilla::decrementNumber(){
+    modifyNumberUnderCursor(-1.0f);
+}
+
 void SonicPiScintilla::setLineErrorMarker(int lineNumber){
 
   markerDeleteAll(-1);
@@ -516,4 +524,36 @@ void SonicPiScintilla::dropEvent(QDropEvent *dropEvent)
     }
     insert(text);
   }
+}
+
+void SonicPiScintilla::modifyNumberUnderCursor(const float by)
+{
+    int cursorLine;
+    int cursorIndex;
+    getCursorPosition(&cursorLine, &cursorIndex);
+    QString lineText = text(cursorLine);
+
+    if (!lineText[cursorIndex].isDigit()) {
+        return;
+    }
+
+    int selStart = cursorIndex;
+    while(selStart > 0 && lineText[selStart - 1].isDigit())
+    {
+        --selStart;
+    }
+
+    int selEnd = cursorIndex;
+    while(selEnd < lineText.length() && lineText[selEnd].isDigit())
+    {
+        ++selEnd;
+    }
+
+    auto numberStr = lineText.mid(selStart, selEnd - selStart);
+    float number = numberStr.toFloat();
+    number += by;
+
+    setSelection(cursorLine, selStart, cursorLine, selEnd);
+    replaceSelectedText(QString::asprintf("%.0f", number));
+    setCursorPosition(cursorLine, selStart);
 }

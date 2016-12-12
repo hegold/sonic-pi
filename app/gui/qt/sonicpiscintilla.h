@@ -53,6 +53,8 @@ class SonicPiScintilla : public QsciScintilla
     void deselect();
     void upcaseWordOrSelection();
     void downcaseWordOrSelection();
+    void incrementNumber();
+    void decrementNumber();
     void highlightAll();
     void unhighlightAll();
     void zoomFontIn();
@@ -66,4 +68,5 @@ class SonicPiScintilla : public QsciScintilla
     void dragEnterEvent(QDragEnterEvent *pEvent);
     void dropEvent(QDropEvent *pEvent);
     void dragMoveEvent(QDragMoveEvent *event);
+    void modifyNumberUnderCursor(float by);
 };

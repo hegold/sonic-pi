@@ -479,10 +479,10 @@ void MainWindow::setupWindowStructure() {
 
 
     //quick nav by jumping up and down 10 lines at a time
-    QShortcut *forwardTenLines = new QShortcut(shiftMetaKey('u'), workspace);
-    connect(forwardTenLines, SIGNAL(activated()), workspace, SLOT(forwardTenLines()));
-    QShortcut *backTenLines = new QShortcut(shiftMetaKey('d'), workspace);
-    connect(backTenLines, SIGNAL(activated()), workspace, SLOT(backTenLines()));
+    //QShortcut *forwardTenLines = new QShortcut(shiftMetaKey('u'), workspace);
+    //connect(forwardTenLines, SIGNAL(activated()), workspace, SLOT(forwardTenLines()));
+    //QShortcut *backTenLines = new QShortcut(shiftMetaKey('d'), workspace);
+    //connect(backTenLines, SIGNAL(activated()), workspace, SLOT(backTenLines()));
 
     //cut to end of line
     QShortcut *cutToEndOfLine = new QShortcut(ctrlKey('k'), workspace);
@@ -508,6 +508,12 @@ void MainWindow::setupWindowStructure() {
     //downcase next word
     QShortcut *downcaseWord= new QShortcut(metaKey('l'), workspace);
     connect(downcaseWord, SIGNAL(activated()), workspace, SLOT(downcaseWordOrSelection()));
+
+    //*crement number
+    QShortcut *incrementNumber = new QShortcut(shiftMetaKey('u'), workspace);
+    connect(incrementNumber, SIGNAL(activated()), workspace, SLOT(incrementNumber()));
+    QShortcut *decrementNumber = new QShortcut(shiftMetaKey('d'), workspace);
+    connect(decrementNumber, SIGNAL(activated()), workspace, SLOT(decrementNumber()));
 
     QString w = QString(tr("Buffer %1")).arg(QString::number(ws));
     workspaces[ws] = workspace;
@@ -870,7 +876,7 @@ void MainWindow::completeSnippetOrIndentCurrentLineOrSelection(SonicPiScintilla*
 
 void MainWindow::toggleCommentInCurrentWorkspace() {
   SonicPiScintilla *ws = (SonicPiScintilla*)tabs->currentWidget();
-  toggleComment(ws);
+  ws->SendScintilla(2104);
 }
 
 void MainWindow::toggleComment(SonicPiScintilla* ws) {
